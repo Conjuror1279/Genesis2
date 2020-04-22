@@ -61,7 +61,7 @@ def SocietyAdminView(request,id):
 
 @login_required
 def SocietyDetailView(request,id):
-    if bool(request.user.society_set.get(id = id)):
+    if bool(request.user.society_set.filter(id = id).first()):
         return SocietyAdminView(request,id)
     elif bool(request.user.member.socities.filter(id = id)):
         return render(request, 'users/society_detail.html',{'society':Society.objects.get(pk = id)})
@@ -69,7 +69,7 @@ def SocietyDetailView(request,id):
         if request.method == 'POST':
             form = RequestMembershipForm(request.POST, instance = request.user)
             if form.is_valid():
-                Society.objects.get(pk = id).Pending_List.add(request.POST)
+                Society.objects.get(pk = id).Pending_List.add(request.user)
                 messages.success(request, f'Your Request Has been Listed')
                 return redirect('My Societies')
         else:
